@@ -1,5 +1,12 @@
 FROM node:8-alpine
 
+ENV VERSION 0.11.4
+ENV DEFAULT_HS_URL "https://matrix.org"
+ENV DEFAULT_IS_URL "https://vector.im"
+ENV BRAND "Riot"
+ENV INTEGRATIONS_UI_URL "https://scalar.vector.im/"
+ENV INTEGRATIONS_REST_URL "https://scalar.vector.im/api"
+
 RUN apk update \
     && apk add --no-cache \
         curl \
@@ -13,18 +20,14 @@ RUN apk update \
         unzip \
         ; \
     npm install -g webpack http-server \
-    && curl -L https://github.com/vector-im/riot-web/archive/master.zip -o v.zip \
-    && unzip v.zip \
-    && rm v.zip \
-    && mv riot-web-master riot-web \
+    && curl -L "https://github.com/vector-im/riot-web/archive/v${VERSION}.tar.gz" -o /riot.tgz \
+    && tar -xv -C / -f /riot.tgz \
+    && rm riot.tgz \
+    && mv riot-web-* riot-web \
     && cd riot-web \
     && npm install \
     && rm -rf /riot-web/node_modules/phantomjs-prebuilt/phantomjs \
-    && GIT_VEC=$(git ls-remote https://github.com/vector-im/riot-web master | cut -f 1) \
-    && echo "riot: master ($GIT_VEC)" > /riot.version \
     && npm run build \
-    ; \
-    ln -s /data/config.json /riot-web/webapp/config.json \
     ; \
     apk del \
         git \
@@ -32,14 +35,12 @@ RUN apk update \
         ; \
     rm -rf /var/lib/apk/* /var/cache/apk/*
 
+COPY assets/config.json /riot-web/webapp/
+COPY entrypoint.sh /
 WORKDIR /riot-web/webapp
 EXPOSE 8080
-CMD [ \
-    "http-server", \
-    "-p", \
-    "8080", \
-    "-A", \
-    "0.0.0.0", \
-    "-c", \
-    "3500" \
+
+ENTRYPOINT [ \
+    "/bin/sh", \
+    "/entrypoint.sh" \
 ]

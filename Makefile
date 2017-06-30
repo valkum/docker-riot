@@ -49,9 +49,9 @@ clean: cleanup  ## remove actual docker image
 	@$(SCMD) docker rmi $(IMAGE_NAME)
 
 cleanup:  ## generic docker cleanup
-	$(SCMD) docker ps -q -f status=exited | xargs -r docker rm -v
-	$(SCMD) docker images -q -f dangling=true | xargs -r docker rmi
-	$(SCMD) docker volume ls -q -f dangling=true | xargs -r docker volume rm
+	$(SCMD) docker ps -q -f status=exited | xargs -r $(SCMD) docker rm -v
+	$(SCMD) docker images -q -f dangling=true | xargs -r $(SCMD) docker rmi
+	$(SCMD) docker volume ls -q -f dangling=true | xargs -r $(SCMD) docker volume rm
 
 
 .PHONY: all help build .build root-shell shell clean cleanup
