@@ -1,6 +1,6 @@
 FROM node:8-alpine
 
-ENV VERSION 0.11.4
+ENV VERSION 0.12.2
 ENV DEFAULT_HS_URL "https://matrix.org"
 ENV DEFAULT_IS_URL "https://vector.im"
 ENV BRAND "Riot"
